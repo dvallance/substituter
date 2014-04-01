@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.version       = Substituter::VERSION
   spec.authors       = ["David Vallance"]
   spec.email         = ["davevallance@gmail.com"]
-  spec.description   = %q{Substitude an existing method by providing a replacement Proc. The Proc will have access to the replaced method and its parameters.}
-  spec.summary       = %q{Substitude an existing method by providing a replacement Proc.}
+  spec.description   = %q{Substitute an existing method with a Proc. The Proc will have access to the replaced method and its parameters.}
+  spec.summary       = %q{Substitute an existing method with a Proc.}
   spec.homepage      = ""
   spec.license       = "MIT"
 
