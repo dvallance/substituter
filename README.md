@@ -20,13 +20,13 @@ Or install it yourself as:
 
 ```ruby 
 my_proc = Proc.new{|original_method,*args|
-  "My proc can do anything and has access to the original method and its arguments. So lets call it an see its value = #{original_method.call(*args)}
+  "My proc info and original methods value = #{original_method.call(*args)}"
 }
 
 Substituter.sub String, :to_s, my_proc
 puts String.new("So Cool!")
 
-#returns "My proc can ... an see its value = So Cool!" 
+#returns "My proc info and original methods value = So Cool!" 
 
 #to restore the original method just clear the substitute
 Substituter.clear String, :to_s
