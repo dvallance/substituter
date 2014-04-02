@@ -25,14 +25,13 @@ class SampleClass
   def taking_a_param_and_block(param)
     block_given? ? yield(param) : param
   end
+
+  def to_s
+    "from sample class"
+  end
 end
 
 describe Substituter do
-
-  it ".parameters_to_definition correctly creates the message definition" do
-    parameters_example = [[:req, :a], [:opt, :b], [:rest, :c], [:block, :e]]
-    Substituter.parameters_to_definition(parameters_example).join(',').must_equal "a,b=nil,*c,&d"
-  end
 
   it ".sub properly allows us to inject a proc to substitute a class instance method " do
     myproc = Proc.new { |original_method, *args|
@@ -118,7 +117,7 @@ describe Substituter do
 
   it ".sub String#gsub" do
     myproc = Proc.new { |original_method, *args|
-      "Proc knows original = #{original_method.call(*args[0])}"
+      "Proc knows original = #{original_method.call(*args)}"
     }
     Substituter.sub String, :gsub, myproc
     String.new("my string").gsub("my", "our").must_equal("Proc knows original = our string")
@@ -127,13 +126,25 @@ describe Substituter do
 
   it ".sub Object.instance_of?" do
     myproc = Proc.new { |original_method, *args|
-      "Proc knows original = #{original_method.call(*args[0])}"
+      "Proc knows original = #{original_method.call(*args)}"
     }
     Substituter.sub Object, :instance_of?, myproc
     Object.new().instance_of?(Array).must_equal("Proc knows original = false")
     Substituter.clear Object, :instance_of?
   end
 
-
-
+  it ".sub will properly handle the same method name put on different objects" do
+    string_proc = Proc.new { |original_method, *args|
+      "String proc with original #{original_method.call(*args)}"
+    }
+    sample_class_proc = Proc.new { |original_method, *args|
+      "Sample proc with original #{original_method.call(*args)}"
+    }
+    Substituter.sub String, :to_s, string_proc
+    Substituter.sub SampleClass, :to_s, sample_class_proc
+    SampleClass.new.to_s.must_equal("Sample proc with original from sample class")
+    String.new("test").to_s.must_equal("String proc with original test")
+    Substituter.clear String, :to_s
+    Substituter.clear SampleClass, :to_s
+  end
 end

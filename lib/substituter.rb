@@ -18,33 +18,8 @@ module Substituter
       @handled_methods[klass.to_s].delete(method)
     end
 
-    def get_proc method
-      @stored_procs[method]
-    end
-
-    def parameters_to_definition array
-      # req     -required argument
-      # opt     -optional argument
-      # rest    -rest of arguments as array
-      # keyreq  -reguired key argument (2.1+)
-      # key     -key argument
-      # keyrest -rest of key arguments as Hash
-      # block   -block parameter
-      definition = []
-      alphabit = ("a".."z").to_a
-      array.each_with_index do |param_definition, count|
-        case param_definition[0]
-        when :req
-          definition << alphabit[count] 
-        when :opt
-          definition << "#{alphabit[count]}=nil"
-        when :rest
-          definition << "*#{alphabit[count]}"
-        when :block
-          definition << "&#{alphabit[count]}"
-        end
-      end
-      definition
+    def get_proc klass, method
+      @stored_procs[klass.to_s + method.to_s]
     end
 
     def prefix(method)
@@ -56,15 +31,14 @@ module Substituter
         raise StandardError, "Already substituted"
       end 
 
-      params_definition = parameters_to_definition(klass.instance_method(method).parameters)
       klass.class_eval %Q(
         include Substituter unless ancestors.select{|obj| obj.class == Module}.include?(Substituter)
         alias_method :#{prefix(method)}, :#{method.to_s}
-        def #{method.to_s}(#{params_definition.join(',')})
+        def #{method.to_s}(*args)
           if block_given?
-            proc_caller(__method__, *(local_variables.collect{|p| eval(p.to_s) } << Proc.new)) 
+            proc_caller(self.class, __method__, *(args << Proc.new))
           else
-            proc_caller(__method__, *(local_variables.collect{|p| eval(p.to_s) })) 
+            proc_caller(self.class, __method__, *args) 
           end
         end
       ), __FILE__, __LINE__
@@ -74,7 +48,7 @@ module Substituter
     def substituted_method(klass, method, aproc)
       @handled_methods[klass.to_s] = [] unless @handled_methods[klass.to_s].is_a? Array
       @handled_methods[klass.to_s] << method
-      Substituter.stored_procs[method] = aproc
+      Substituter.stored_procs[klass.to_s + method.to_s] = aproc
     end
 
     def substituted_methods(klass)
@@ -84,8 +58,8 @@ module Substituter
 
   #instance methods below
 
-  def proc_caller(method, *args)
-    stored_proc = Substituter.get_proc(method)
+  def proc_caller(klass, method, *args)
+    stored_proc = Substituter.get_proc(klass, method)
     stored_proc.call(method("#{Substituter.prefix(method)}".to_sym), *args)
   end
 
