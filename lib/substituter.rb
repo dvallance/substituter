@@ -61,7 +61,11 @@ module Substituter
         include Substituter unless ancestors.select{|obj| obj.class == Module}.include?(Substituter)
         alias_method :#{prefix(method)}, :#{method.to_s}
         def #{method.to_s}(#{params_definition.join(',')})
-          proc_caller(__method__, *(local_variables.collect{|p| eval(p.to_s) })) 
+          if block_given?
+            proc_caller(__method__, *(local_variables.collect{|p| eval(p.to_s) } << Proc.new)) 
+          else
+            proc_caller(__method__, *(local_variables.collect{|p| eval(p.to_s) })) 
+          end
         end
       ), __FILE__, __LINE__
       substituted_method klass, method, aproc 

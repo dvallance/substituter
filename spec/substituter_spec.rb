@@ -19,11 +19,11 @@ class SampleClass
   end
 
   def taking_a_param_and_proc(param, &block)
-    if block_given?
-      yield param
-    else
-      param
-    end
+    block_given? ? yield(param) : param
+  end
+
+  def taking_a_param_and_block(param)
+    block_given? ? yield(param) : param
   end
 end
 
@@ -86,7 +86,15 @@ describe Substituter do
     Substituter.sub SampleClass, :taking_a_param_and_proc, myproc
     SampleClass.new.taking_a_param_and_proc("my param"){|p| "block value and #{p}"}.must_equal "Proc knows original = block value and my param"
     Substituter.clear SampleClass, :taking_a_param_and_proc
+  end
 
+  it ".sub handles a param and a block" do
+    myproc = Proc.new { |original_method, *args|
+      "Proc knows original = #{original_method.call(args[0], &args[1])}"
+    }
+    Substituter.sub SampleClass, :taking_a_param_and_block, myproc
+    SampleClass.new.taking_a_param_and_block("my param"){|p| "block value and #{p}"}.must_equal "Proc knows original = block value and my param"
+    Substituter.clear SampleClass, :taking_a_param_and_block
   end
 
   it ".sub String#to_s" do
