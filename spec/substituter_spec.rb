@@ -37,7 +37,7 @@ describe Substituter do
     myproc = Proc.new { |original_method, *args|
       "Proc knows original = #{original_method.call(*args)}"
     }
-    Substituter.sub(SampleClass, :one_param, myproc)
+    Substituter.sub(SampleClass, :one_param, &myproc)
     SampleClass.new.one_param("Cool").must_equal "Proc knows original = Cool"
     Substituter.clear SampleClass, :one_param
   end
@@ -46,8 +46,8 @@ describe Substituter do
     myproc = Proc.new { |original_method, *args|
       "Proc knows original = #{original_method.call(*args)}"
     }
-    Substituter.sub SampleClass, :one_param, myproc
-    lambda { Substituter.sub SampleClass, :one_param, myproc }.must_raise(StandardError)
+    Substituter.sub SampleClass, :one_param, &myproc
+    lambda { Substituter.sub SampleClass, :one_param, &myproc }.must_raise(StandardError)
     Substituter.clear SampleClass, :one_param
   end
 
@@ -55,7 +55,7 @@ describe Substituter do
     myproc = Proc.new { |original_method, *args|
       "Proc knows original = #{original_method.call(*args)}"
     }
-    Substituter.sub SampleClass, :two_params, myproc
+    Substituter.sub SampleClass, :two_params, &myproc
     SampleClass.new.two_params("one","two").must_equal "Proc knows original = one,two"
     Substituter.clear SampleClass, :two_params
   end
@@ -64,7 +64,7 @@ describe Substituter do
     myproc = Proc.new { |original_method, *args|
       "Proc knows original = #{original_method.call(*args)}"
     }
-    Substituter.sub SampleClass, :param_and_splat, myproc
+    Substituter.sub SampleClass, :param_and_splat, &myproc
     SampleClass.new.param_and_splat(:something,"two","three").must_equal "Proc knows original = something,two,three"
     Substituter.clear SampleClass, :param_and_splat
   end
@@ -73,7 +73,7 @@ describe Substituter do
     myproc = Proc.new { |original_method, *args|
       "Proc knows original = #{original_method.call(&args[0])}"
     }
-    Substituter.sub SampleClass, :taking_a_proc, myproc
+    Substituter.sub SampleClass, :taking_a_proc, &myproc
     SampleClass.new.taking_a_proc(&Proc.new{"block value"}).must_equal "Proc knows original = block value"
     Substituter.clear SampleClass, :taking_a_proc
   end
@@ -82,7 +82,7 @@ describe Substituter do
     myproc = Proc.new { |original_method, *args|
       "Proc knows original = #{original_method.call(args[0], &args[1])}"
     }
-    Substituter.sub SampleClass, :taking_a_param_and_proc, myproc
+    Substituter.sub SampleClass, :taking_a_param_and_proc, &myproc
     SampleClass.new.taking_a_param_and_proc("my param"){|p| "block value and #{p}"}.must_equal "Proc knows original = block value and my param"
     Substituter.clear SampleClass, :taking_a_param_and_proc
   end
@@ -91,7 +91,7 @@ describe Substituter do
     myproc = Proc.new { |original_method, *args|
       "Proc knows original = #{original_method.call(args[0], &args[1])}"
     }
-    Substituter.sub SampleClass, :taking_a_param_and_block, myproc
+    Substituter.sub SampleClass, :taking_a_param_and_block, &myproc
     SampleClass.new.taking_a_param_and_block("my param"){|p| "block value and #{p}"}.must_equal "Proc knows original = block value and my param"
     Substituter.clear SampleClass, :taking_a_param_and_block
   end
@@ -100,7 +100,7 @@ describe Substituter do
     myproc = Proc.new { |original_method, *args|
       "Proc knows original = #{original_method.call(*args)}"
     }
-    Substituter.sub String, :to_s, myproc
+    Substituter.sub String, :to_s, &myproc
     String.new("my string").to_s.must_equal "Proc knows original = my string"
     Substituter.clear String, :to_s
     String.new("my string").to_s.must_equal "my string"
@@ -110,7 +110,7 @@ describe Substituter do
     myproc = Proc.new { |original_method, *args|
       "Proc knows original = #{original_method.call(*args[0])}"
     }
-    Substituter.sub String, :index, myproc
+    Substituter.sub String, :index, &myproc
     String.new("my string").index("my").must_equal("Proc knows original = 0")
     Substituter.clear String, :index
   end
@@ -119,7 +119,7 @@ describe Substituter do
     myproc = Proc.new { |original_method, *args|
       "Proc knows original = #{original_method.call(*args)}"
     }
-    Substituter.sub String, :gsub, myproc
+    Substituter.sub String, :gsub, &myproc
     String.new("my string").gsub("my", "our").must_equal("Proc knows original = our string")
     Substituter.clear String, :gsub
   end
@@ -128,7 +128,7 @@ describe Substituter do
     myproc = Proc.new { |original_method, *args|
       "Proc knows original = #{original_method.call(*args)}"
     }
-    Substituter.sub Object, :instance_of?, myproc
+    Substituter.sub Object, :instance_of?, &myproc
     Object.new().instance_of?(Array).must_equal("Proc knows original = false")
     Substituter.clear Object, :instance_of?
   end
@@ -140,11 +140,12 @@ describe Substituter do
     sample_class_proc = Proc.new { |original_method, *args|
       "Sample proc with original #{original_method.call(*args)}"
     }
-    Substituter.sub String, :to_s, string_proc
-    Substituter.sub SampleClass, :to_s, sample_class_proc
+    Substituter.sub String, :to_s, &string_proc
+    Substituter.sub SampleClass, :to_s, &sample_class_proc
     SampleClass.new.to_s.must_equal("Sample proc with original from sample class")
     String.new("test").to_s.must_equal("String proc with original test")
     Substituter.clear String, :to_s
     Substituter.clear SampleClass, :to_s
   end
+
 end

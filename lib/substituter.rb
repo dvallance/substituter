@@ -1,4 +1,7 @@
 require "substituter/version"
+def Hijack(klass, method, &aproc)
+  Substituter.sub(klass, method, &aproc)
+end
 
 module Substituter
 
@@ -26,7 +29,7 @@ module Substituter
       @method_rename_prefix + method.to_s
     end
 
-    def sub klass, method, aproc
+    def sub klass, method, &aproc
       if substituted_methods(klass).include? method
         raise StandardError, "Already substituted"
       end 
@@ -42,10 +45,10 @@ module Substituter
           end
         end
       ), __FILE__, __LINE__
-      substituted_method klass, method, aproc 
+      substituted_method klass, method, &aproc 
     end
 
-    def substituted_method(klass, method, aproc)
+    def substituted_method(klass, method, &aproc)
       @handled_methods[klass.to_s] = [] unless @handled_methods[klass.to_s].is_a? Array
       @handled_methods[klass.to_s] << method
       Substituter.stored_procs[klass.to_s + method.to_s] = aproc
