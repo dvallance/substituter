@@ -1,6 +1,6 @@
 # Substituter
 
-Substituter is designed to easily override an existing class instance method with a provided Proc. The existing method is renamed and a reference is kept to this original method so that the new Proc that is executed will be able to call the original method and has access to its parameters.
+Substituter is designed to easily substitute an existing class instance method with a provided Proc. The existing method is renamed and a reference is kept to this original method so that the new Proc that is executed will be able to call the original method and has access to its parameters.
 
 ## Installation
 
