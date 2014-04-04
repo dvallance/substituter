@@ -35,11 +35,11 @@ Substituter.clear String, :to_s
 
 ## *args gottcha's
 
-Generally calling `original_method.call(*args)` will work unless the original method is called with a Proc object as a parameter of with an implicit block.
+Generally calling `original_method.call(*args)` will work unless args contains a Proc object, which it will if the orginal method is called with a proc parameter or a block.
 
 Note: an _implicit_ _block_ will be turned into a Proc object and appended to the args array.
 
-When the _args_ array contains a Proc object the splat operator can not be used when passing to the _original_method.call_. You have to specify the _&_ operator on the Proc parameter.
+Proc objects must be passed with the _&_ operator prepended manually.
 
 ```ruby
 # our sample class with a method to substitute
