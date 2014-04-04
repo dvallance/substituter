@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.email         = ["davevallance@gmail.com"]
   spec.description   = %q{Substitute an existing method with a Proc. The Proc will have access to the replaced method and its parameters.}
   spec.summary       = %q{Substitute an existing method with a Proc.}
-  spec.homepage      = ""
+  spec.homepage      = "https://github.com/dvallance/substituter"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files`.split($/)
