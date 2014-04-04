@@ -33,6 +33,39 @@ Substituter.clear String, :to_s
 
 ```
 
+## *args gottcha's
+
+Generally calling `original_method.call(*args)` will work unless the original method is called with a Proc object as a parameter of with an implicit block.
+
+Note: an _implicit_ _block_ will be turned into a Proc object and appended to the args array.
+
+When the _args_ array contains a Proc object the splat operator can not be used when passing to the _original_method.call_. You have to specify the _&_ operator on the Proc parameter.
+
+```ruby
+# our sample class with a method to substitute
+class Sample
+  def taking_a_param_and_block(param)
+    block_given? yield(param) : param
+  end
+end
+
+# our proc we will substitute in for the original method
+my_proc = Proc.new{|original_method,*args|
+  #here we explicitly pass in the arguments, making sure to add '&' to the proc object
+  "My proc info and original methods value = #{original_method.call(args[0], args[1])}"
+}
+
+Substituter.sub Sample, :taking_a_param_and_block, my_proc
+
+Sample.new.taking_a_param_and_block("Hello") do |param|
+  "#{param} World"
+end
+
+#returns "My proc info and original methods value = Hello World!" 
+
+#see the spec/substituter_spec.rb for examples
+
+```
 
 ## Contributing
 
