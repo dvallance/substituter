@@ -24,7 +24,7 @@ my_proc = Proc.new{|original_method,*args|
 }
 
 Substituter.sub String, :to_s, my_proc
-puts String.new("So Cool!")
+puts String.new("So Cool!").to_s
 
 #returns "My proc info and original methods value = So Cool!" 
 
