@@ -52,7 +52,7 @@ end
 # our proc we will substitute in for the original method
 my_proc = Proc.new{|original_method,*args|
   #here we explicitly pass in the arguments, making sure to add '&' to the proc object
-  "My proc info and original methods value = #{original_method.call(args[0], args[1])}"
+  "My proc info and original methods value = #{original_method.call(args[0], &args[1])}"
 }
 
 Substituter.sub Sample, :taking_a_param_and_block, my_proc
