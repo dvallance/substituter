@@ -63,6 +63,13 @@ end
 
 #returns "My proc info and original methods value = Hello World!" 
 
+
+#to see a list of all substituted methods
+Substituter.ls
+
+##-> {"String" => [:to_s]}
+
+
 #see the spec/substituter_spec.rb for examples
 
 ```

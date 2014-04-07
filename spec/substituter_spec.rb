@@ -51,6 +51,14 @@ describe Substituter do
     Substituter.clear SampleClass, :one_param
   end
 
+  it ".ls will provide a hash of all the currently substituted methods" do
+    Substituter.sub(SampleClass, :one_param) {"a"}
+    Substituter.sub(SampleClass, :two_params) {"a"}
+    Substituter.ls.must_equal({"SampleClass"=>[:one_param,:two_params]})
+    Substituter.clear SampleClass, :one_param
+    Substituter.clear SampleClass, :two_params
+  end
+
   it ".sub handles two params properly" do
     myproc = Proc.new { |original_method, *args|
       "Proc knows original = #{original_method.call(*args)}"

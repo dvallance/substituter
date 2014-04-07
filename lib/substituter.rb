@@ -1,7 +1,4 @@
 require "substituter/version"
-def Hijack(klass, method, &aproc)
-  Substituter.sub(klass, method, &aproc)
-end
 
 module Substituter
 
@@ -14,7 +11,6 @@ module Substituter
 
     def clear(klass, method)
       klass.class_eval %Q(
-        remove_method method
         alias_method :#{method.to_s}, :#{prefix(method)}
         remove_method :#{prefix(method)}
       ), __FILE__, __LINE__
@@ -23,6 +19,10 @@ module Substituter
 
     def get_proc klass, method
       @stored_procs[klass.to_s + method.to_s]
+    end
+
+    def ls
+      @handled_methods.select{|key,value| !value.empty?}
     end
 
     def prefix(method)
