@@ -26,7 +26,12 @@ my_proc = Proc.new{|original_method,*args|
 Substituter.sub String, :to_s, my_proc
 puts String.new("So Cool!").to_s
 
-#returns "My proc info and original methods value = So Cool!" 
+#-> "My proc info and original methods value = So Cool!" 
+
+#to see a list of all substituted methods
+Substituter.ls
+
+#-> {"String" => [:to_s]}
 
 #to restore the original method just clear the substitute
 Substituter.clear String, :to_s
@@ -61,14 +66,7 @@ Sample.new.taking_a_param_and_block("Hello") do |param|
   "#{param} World"
 end
 
-#returns "My proc info and original methods value = Hello World!" 
-
-
-#to see a list of all substituted methods
-Substituter.ls
-
-##-> {"String" => [:to_s]}
-
+#-> "My proc info and original methods value = Hello World!" 
 
 #see the spec/substituter_spec.rb for examples
 
