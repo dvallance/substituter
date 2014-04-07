@@ -13,7 +13,7 @@ module Substituter
       klass.class_eval %Q(
         alias_method :#{method.to_s}, :#{prefix(method)}
         remove_method :#{prefix(method)}
-      ), __FILE__, __LINE__
+      ), __FILE__, __LINE__ + 1
       @handled_methods[klass.to_s].delete(method)
     end
 
@@ -44,7 +44,7 @@ module Substituter
             proc_caller(self.class, __method__, *args) 
           end
         end
-      ), __FILE__, __LINE__
+      ), __FILE__, __LINE__ + 1
       substituted_method klass, method, &aproc 
     end
 
